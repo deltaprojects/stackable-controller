@@ -3,10 +3,10 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /                           @controllers.Application.index
 
-GET     /messages                   controllers.Application.messages
-GET     /messages/:id               controllers.Application.editMessage(id: Int)
+GET     /messages                   @controllers.Application.messages
+GET     /messages/:id               @controllers.Application.editMessage(id: Int)
 
 
 # Map static resources from the /public folder to the /assets URL path

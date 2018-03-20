@@ -7,9 +7,10 @@ import scala.util.{Failure, Success}
 import scala.util.control.{NonFatal, ControlThrowable}
 
 trait StackableController {
-    self: Controller =>
+    self: AbstractController =>
 
-  final class StackActionBuilder(params: Attribute[_]*) extends ActionBuilder[RequestWithAttributes] {
+  final class StackActionBuilder(params: Attribute[_]*) extends ActionBuilder[RequestWithAttributes, AnyContent] {
+
     def invokeBlock[A](req: Request[A], block: (RequestWithAttributes[A]) => Future[Result]): Future[Result] = {
       val request = new RequestWithAttributes(req, new TrieMap[RequestAttributeKey[_], Any] ++= params.map(_.toTuple))
       try {
@@ -19,6 +20,10 @@ trait StackableController {
         case NonFatal(e) => cleanupOnFailed(request, e); throw e
       }
     }
+
+    override def parser: BodyParser[AnyContent] = self.controllerComponents.parsers.defaultBodyParser
+
+    override protected def executionContext: ExecutionContext = self.controllerComponents.executionContext
   }
 
   final def AsyncStack[A](p: BodyParser[A], params: Attribute[_]*)(f: RequestWithAttributes[A] => Future[Result]): Action[A] = new StackActionBuilder(params: _*).async(p)(f)

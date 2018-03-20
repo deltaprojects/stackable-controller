@@ -1,13 +1,11 @@
 package controllers
 
-import play.api.mvc._
+import controllers.stack._
 import models._
 import views._
-import controllers.stack._
-import jp.t2v.lab.play2.stackc.RequestWithAttributes
+import play.api.mvc._
 
-object Application extends Controller with DBSessionElement with LoggingElement {
-  
+class Application (components: ControllerComponents)(implicit assetsFinder: AssetsFinder) extends AbstractController(components) with DBSessionElement with LoggingElement {
   def index = Action {
     Ok(views.html.index("Your new application is ready."))
   }
