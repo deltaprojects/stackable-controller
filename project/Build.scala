@@ -7,13 +7,7 @@ object StackableControllerProjects extends Build {
 
   lazy val _organization = "jp.t2v"
 
-  lazy val _version = "0.7.0"
-
-  def _publishTo(v: String) = {
-    val nexus = "https://oss.sonatype.org/"
-    if (v.trim.endsWith("SNAPSHOT")) Some("snapshots" at nexus + "content/repositories/snapshots")  
-    else Some("releases" at nexus + "service/local/staging/deploy/maven2")
-  }
+  lazy val _version = "0.7.4"
 
   lazy val _resolvers = Seq(
     "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
@@ -55,7 +49,8 @@ object StackableControllerProjects extends Build {
     version := _version,
     scalaVersion := Scala211,
     crossScalaVersions := Scala211 :: Nil,
-    publishTo <<= version { (v: String) => _publishTo(v) },
+    publishTo := Some("Delta projects" at "http://mavenrepo.service.delta.prod/artifactory/libs-releases-local/"),
+    credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
     publishMavenStyle := true,
     resolvers ++= _resolvers,
     libraryDependencies ++= Seq(
@@ -71,6 +66,8 @@ object StackableControllerProjects extends Build {
 
   lazy val sample = Project("sample", file("sample")).enablePlugins(play.sbt.PlayScala).settings(
     version := _version,
+    publishTo := Some("Delta projects" at "http://mavenrepo.service.delta.prod/artifactory/libs-releases-local"),
+    credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
     scalaVersion := Scala211,
     resolvers ++= _resolvers,
     routesGenerator := StaticRoutesGenerator,
@@ -86,6 +83,9 @@ object StackableControllerProjects extends Build {
   ) dependsOn(core)
 
   lazy val root = Project(id = "root", base = file(".")).settings(
+    version := _version,
+    publishTo := Some("Delta projects" at "http://mavenrepo.service.delta.prod/artifactory/libs-releases-local"),
+    credentials += Credentials(Path.userHome / ".sbt" / ".credentials"),
     scalaVersion := Scala211
   ).aggregate(core, sample) 
 
